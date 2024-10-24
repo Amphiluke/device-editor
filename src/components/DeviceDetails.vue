@@ -101,7 +101,7 @@ const editedUnitId = ref(null);
       />
     </template>
 
-    <v-card-actions class="flex-wrap justify-center">
+    <v-card-actions class="flex-wrap justify-space-between">
       <v-btn
         color="secondary"
         text="Добавить узел учёта"
