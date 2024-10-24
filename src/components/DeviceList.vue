@@ -10,7 +10,7 @@ const deviceData = computed(() => devices.map(({ id, name, meteringUnits }) => (
 })));
 const headers = [
   { title: 'Устройство', key: 'name' },
-  { title: 'Кол-во узлов', key: 'units' },
+  { title: 'Узлов', key: 'units' },
 ];
 
 const editedDeviceId = ref(null);
@@ -67,7 +67,7 @@ const expandedDevices = computed({
       <tfoot>
         <tr>
           <td :colspan="columns.length">
-            <div class="d-flex justify-space-between py-4">
+            <div class="d-flex justify-space-between flex-wrap ga-2 py-4">
               <v-btn
                 color="secondary"
                 text="Добавить устройство"

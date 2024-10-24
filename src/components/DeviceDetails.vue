@@ -101,7 +101,7 @@ const editedUnitId = ref(null);
       />
     </template>
 
-    <template #actions>
+    <v-card-actions class="flex-wrap justify-center">
       <v-btn
         color="secondary"
         text="Добавить узел учёта"
@@ -114,7 +114,7 @@ const editedUnitId = ref(null);
         variant="tonal"
         @click="removeDevice(device.id)"
       />
-    </template>
+    </v-card-actions>
   </v-card>
 </template>
 
