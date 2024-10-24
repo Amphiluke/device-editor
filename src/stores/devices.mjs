@@ -98,6 +98,19 @@ export const useDeviceStore = defineStore('devices', () => {
   }
 
   /**
+   * Rewrite the list of metering units for a device
+   * @param {String} deviceId - UUID of the device
+   * @param {import('./devices-data.mjs').MeteringUnit[]} units - New list of metering units
+   */
+  function resetMeteringUnits(deviceId, units) {
+    const device = devices.find(({ id }) => id === deviceId);
+    if (!device) {
+      throw new Error('Устройство не найдено');
+    }
+    device.meteringUnits = units;
+  }
+
+  /**
    * Reset device list to defaults
    */
   function reset() {
@@ -113,6 +126,7 @@ export const useDeviceStore = defineStore('devices', () => {
     addMeteringUnit,
     removeMeteringUnit,
     renameMeteringUnit,
+    resetMeteringUnits,
     reset,
   };
 });

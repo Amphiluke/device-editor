@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue';
+import draggable from 'vuedraggable';
 import { useDeviceStore } from '@/stores/devices.mjs';
 
 const props = defineProps({
@@ -15,8 +16,13 @@ const {
   removeMeteringUnit,
   addMeteringUnit,
   renameMeteringUnit,
+  resetMeteringUnits,
 } = useDeviceStore();
 const device = computed(() => devices.find(({ id }) => id === props.deviceId));
+const units = computed({
+  get: () => device.value.meteringUnits,
+  set: (updatedUnits) => resetMeteringUnits(device.value.id, updatedUnits),
+});
 const editedUnitId = ref(null);
 </script>
 
@@ -34,50 +40,57 @@ const editedUnitId = ref(null);
         <v-list-subheader>
           Узлы учёта
         </v-list-subheader>
-        <v-list-item
-          v-for="{ id, name } in device.meteringUnits"
-          :key="id"
-          :value="name"
+        <draggable
+          v-model="units"
+          item-key="id"
         >
-          <template #prepend>
-            <v-icon size="small">
-              mdi-drag-vertical
-            </v-icon>
+          <template #item="{ element }">
+            <v-list-item
+              :value="element.name"
+              :class="$style.unitItem"
+              :link="false"
+            >
+              <template #prepend>
+                <v-icon size="small">
+                  mdi-drag-vertical
+                </v-icon>
+              </template>
+              <template #append>
+                <v-btn
+                  :icon="editedUnitId === element.id ? 'mdi-check' : 'mdi-pencil'"
+                  :color="editedUnitId === element.id ? 'green' : null"
+                  :title="editedUnitId === element.id ? 'Завершить редактирование' : 'Редактировать'"
+                  size="x-small"
+                  variant="text"
+                  @click="editedUnitId = editedUnitId === null ? element.id : null"
+                />
+                <v-btn
+                  icon="mdi-trash-can"
+                  color="red"
+                  title="Удалить узел учёта"
+                  size="x-small"
+                  variant="text"
+                  @click="removeMeteringUnit(device.id, element.id)"
+                />
+              </template>
+              <v-list-item-title>
+                <v-text-field
+                  v-if="editedUnitId === element.id"
+                  :model-value="element.name"
+                  color="primary"
+                  variant="underlined"
+                  single-line
+                  autofocus
+                  @keypress.enter="({ target }) => renameMeteringUnit(device.id, element.id, target.value)"
+                  @change="({ target }) => renameMeteringUnit(device.id, element.id, target.value)"
+                />
+                <template v-else>
+                  {{ element.name }}
+                </template>
+              </v-list-item-title>
+            </v-list-item>
           </template>
-          <template #append>
-            <v-btn
-              :icon="editedUnitId === id ? 'mdi-check' : 'mdi-pencil'"
-              :color="editedUnitId === id ? 'green' : null"
-              :title="editedUnitId === id ? 'Завершить редактирование' : 'Редактировать'"
-              size="x-small"
-              variant="text"
-              @click="editedUnitId = editedUnitId === null ? id : null"
-            />
-            <v-btn
-              icon="mdi-trash-can"
-              color="red"
-              title="Удалить узел учёта"
-              size="x-small"
-              variant="text"
-              @click="removeMeteringUnit(device.id, id)"
-            />
-          </template>
-          <v-list-item-title>
-            <v-text-field
-              v-if="editedUnitId === id"
-              :model-value="name"
-              color="primary"
-              variant="underlined"
-              single-line
-              autofocus
-              @keypress.enter="({ target }) => renameMeteringUnit(device.id, id, target.value)"
-              @change="({ target }) => renameMeteringUnit(device.id, id, target.value)"
-            />
-            <template v-else>
-              {{ name }}
-            </template>
-          </v-list-item-title>
-        </v-list-item>
+        </draggable>
       </v-list>
       <v-empty-state
         v-else
@@ -104,3 +117,9 @@ const editedUnitId = ref(null);
     </template>
   </v-card>
 </template>
+
+<style module>
+.unitItem[data-draggable="true"] {
+  cursor: grab;
+}
+</style>
