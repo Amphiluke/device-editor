@@ -30,7 +30,7 @@ jobs:
       - name: Install and build project
         run: |
           npm ci
-          npm run build
+          npm run build -- --base=/device-editor/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
